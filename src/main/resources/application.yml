@@ -1,0 +1,14 @@
+server:
+  port: 6060
+
+swagger.enabled: true
+
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: test
+    jpa:
+      repositories:
+        enabled: true
