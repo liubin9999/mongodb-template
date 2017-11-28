@@ -1,5 +1,7 @@
 package com.example.demo.domain;
 
+import java.util.List;
+
 /**
  * 利用mongoTemplate
  *
@@ -16,6 +18,22 @@ public interface UserTemplate {
      * @param user
      */
     String save(User user);
+
+    /**
+     * 批量查询
+     *
+     * @param age
+     * @return
+     */
+    List<User> findAll(int age);
+
+    /**
+     * 原生查询
+     *
+     * @param name
+     * @return
+     */
+    List<User> nativeQuery(String name);
 
     /**
      * 整体替换
@@ -41,4 +59,13 @@ public interface UserTemplate {
      * @param num
      */
     void update(String name, int age, int num);
+
+    /**
+     * 集合中插入元素
+     *
+     * @param name
+     * @param schools
+     */
+    void addToList(String name, List<School> schools);
+
 }
