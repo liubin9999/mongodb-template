@@ -3,14 +3,18 @@ package com.example.demo.infrastructure.persistence;
 import com.example.demo.domain.School;
 import com.example.demo.domain.User;
 import com.example.demo.domain.UserTemplate;
+import com.example.demo.domain.pojo.HostingCount;
 import com.example.demo.util.GsonUtil;
 import com.example.demo.util.Paginate;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -18,6 +22,8 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 /**
  * 非JPA接口实现
@@ -51,7 +57,7 @@ public class UserTemplateImpl implements UserTemplate {
 
     @Override
     public List<User> nativeQuery(String name) {
-        BasicQuery query2 = new BasicQuery("{ age : { $gt : 1 }, name : '"+ name +"' }");
+        BasicQuery query2 = new BasicQuery("{ age : { $gt : 1 }, name : '" + name + "' }");
         return mongoTemplate.find(query2, User.class);
     }
 
@@ -123,7 +129,7 @@ public class UserTemplateImpl implements UserTemplate {
     public List<User> ignoreCaseQuery(String name) {
         Query query = new Query();
         // 法一
-        query.addCriteria(Criteria.where("name").regex(name,"i"));
+        query.addCriteria(Criteria.where("name").regex(name, "i"));
         // 法二
 //        query.addCriteria(Criteria.where("name").regex(
 //                Pattern.compile(Pattern.quote(name), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE)));
@@ -134,13 +140,13 @@ public class UserTemplateImpl implements UserTemplate {
     public List<User> findAll(String name, Paginate paginate) {
         Criteria criteria = Criteria.where("name").is(name);
 
-        paginate.setTotalNumber(mongoTemplate.count(new Query(criteria),User.class));
+        paginate.setTotalNumber(mongoTemplate.count(new Query(criteria), User.class));
         paginate.calcTotalPageNumber();
 
         Query query = new Query(criteria).with(new Sort(Sort.Direction.DESC, "age"));
         query.skip(paginate.caclStartNum()).limit(paginate.getPage());
 
-        return mongoTemplate.find(query,User.class);
+        return mongoTemplate.find(query, User.class);
     }
 
     @Override
@@ -156,8 +162,34 @@ public class UserTemplateImpl implements UserTemplate {
     public long delete(String id) {
         Criteria criteria = Criteria.where("_id").is(id);
 
-        WriteResult writeResult = mongoTemplate.remove(new Query(criteria),User.class);
+        WriteResult writeResult = mongoTemplate.remove(new Query(criteria), User.class);
 
         return writeResult.getN();
+    }
+
+    @Override
+    public List<HostingCount> distinctQuery(String distinct, int age) {
+        Criteria criteria = Criteria.where("age").gt(age);
+        Aggregation agg = newAggregation(
+                match(criteria),
+                group("name","age").count().as("total"),
+                project("total","age","name").and("content").previousOperation(),
+                sort(Sort.Direction.DESC, "total")
+        );
+
+        //Convert the aggregation result into a List
+        AggregationResults<HostingCount> groupResults
+                = mongoTemplate.aggregate(agg, User.class, HostingCount.class);
+        return groupResults.getMappedResults();
+
+    }
+
+    @Override
+    public List<User> findByPageable(String name, Pageable pageable) {
+        Criteria criteria = Criteria.where("name").gt(name);
+
+        Query query = new Query(criteria).with(pageable);
+
+        return mongoTemplate.find(query, User.class);
     }
 }

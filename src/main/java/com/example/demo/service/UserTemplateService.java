@@ -3,11 +3,11 @@ package com.example.demo.service;
 import com.example.demo.domain.School;
 import com.example.demo.domain.User;
 import com.example.demo.domain.UserTemplate;
+import com.example.demo.domain.pojo.HostingCount;
 import com.example.demo.util.Paginate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,13 +104,21 @@ public class UserTemplateService {
         System.out.println("\n查询结果：----" + num);
     }
 
-    @PostConstruct
     public void delete(){
         String id = "5a1bca32160e23cf7046b7f6";
 
         long num = userTemplate.delete(id);
 
         System.out.println("\n\n查询结果：----" + num +"\n\n");
+    }
+
+    public void distinctQuery(){
+        String dictinc = "name";
+        int age = 0 ;
+        List<HostingCount> result = userTemplate.distinctQuery(dictinc, age);
+
+        // HostingCount(total=1, name=张三, age=112, content={ "name" : "张三" , "age" : 112})
+        System.out.println("\n\n查询结果：----" + result.toString() +"\n\n");
     }
 
 }

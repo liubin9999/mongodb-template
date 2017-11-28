@@ -9,6 +9,8 @@ spring:
       host: localhost
       port: 27017
       database: test
-    jpa:
-      repositories:
-        enabled: true
+
+  jpa:
+    repositories:
+      enabled: true
+    show-sql: true

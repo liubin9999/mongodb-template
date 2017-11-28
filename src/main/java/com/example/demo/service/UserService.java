@@ -1,12 +1,14 @@
 package com.example.demo.service;
 
-import com.example.demo.domain.*;
+import com.example.demo.domain.User;
+import com.example.demo.domain.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,10 +57,16 @@ public class UserService {
         Page<User> page = userRepository.findByAge(122, new PageRequest(0, 2, Sort.Direction.ASC, "age"));
         System.out.println(page.toString());
     }
-
+    @PostConstruct
     public void nativeSql() {
         List<User> userList = userRepository.findByQuery();
         System.out.println("******原生查询语句" + userList.toString());
     }
 
+
+    public void distinctQuery() {
+        List<User> userList = userRepository.findDistinctByName();
+
+        System.out.println("\n\n查询结果：----" + userList.toString() + "\n\n");
+    }
 }

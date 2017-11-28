@@ -45,7 +45,7 @@ public interface UserRepository extends MongoRepository<User, String> {
      * 根据条件去重
      * @return
      */
-    List<User> findDistinctByAge();
+    List<User> findDistinctByName();
 
     /**
      * 忽略大小写

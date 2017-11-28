@@ -1,6 +1,8 @@
 package com.example.demo.domain;
 
+import com.example.demo.domain.pojo.HostingCount;
 import com.example.demo.util.Paginate;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -96,6 +98,14 @@ public interface UserTemplate {
     List<User> findAll(String name, Paginate paginate);
 
     /**
+     * 分页查询
+     * @param name
+     * @param pageable
+     * @return
+     */
+    List<User> findByPageable(String name, Pageable pageable);
+
+    /**
      * 计算总数
      * @param name
      * @return
@@ -108,6 +118,15 @@ public interface UserTemplate {
      * @return
      */
     long delete(String id);
+
+    /**
+     * 去重
+     * @param distinct
+     * @param age
+     * @return
+     */
+    List<HostingCount> distinctQuery(String distinct, int age);
+
 
     // 去重、删除集合中指定元素 、聚合查询
 }
