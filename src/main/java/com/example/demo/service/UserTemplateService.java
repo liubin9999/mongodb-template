@@ -101,6 +101,6 @@ public class UserTemplateService {
     public void count(){
         String name = "张三";
         long num = userTemplate.count(name);
-        System.out.println("\n\n查询结果：----" + num);
+        System.out.println("\n查询结果：----" + num);
     }
 }
