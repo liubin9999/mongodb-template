@@ -24,21 +24,7 @@ public class UserService {
 
     public void save() {
         User user = new User();
-        user.setName("张三");
-        user.setAge(122);
-
-        List<String> address = new ArrayList<>();
-        address.add("杭州");
-        address.add("上海");
-        user.setAddress(address);
-
-        user.setBodyBuild(new BodyBuild(111, 222, "A"));
-
-        List<School> schoolList = new ArrayList<>();
-        schoolList.add(new School(111, "学校名称", 2015));
-        schoolList.add(new School(1123, "学校名称--2", 2016));
-        user.setSchools(schoolList);
-
+        user.createUserCase();
         userRepository.save(user);
     }
 

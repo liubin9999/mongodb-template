@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,5 +51,27 @@ public class User {
      * 学校
      */
     private List<School> schools;
+
+
+    /**
+     * 创建一个实例
+     */
+    public void createUserCase(){
+        this.name = "张三22";
+        this.age = 122;
+
+        List<String> address = new ArrayList<>();
+        address.add("杭州");
+        address.add("上海");
+        this.address = address;
+
+        BodyBuild bodyBuild = new BodyBuild(111, 222, "A");
+        this.bodyBuild = bodyBuild;
+
+        List<School> schoolList = new ArrayList<>();
+        schoolList.add(new School(111, "学校名称", 2015));
+        schoolList.add(new School(1123, "学校名称--2", 2016));
+        this.schools = schoolList;
+    }
 
 }

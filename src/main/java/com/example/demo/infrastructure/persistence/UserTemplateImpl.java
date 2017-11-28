@@ -25,11 +25,15 @@ public class UserTemplateImpl implements UserTemplate {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    /**
-     * 整体替换
-     *
-     * @return
-     */
+
+    @Override
+    public String save(User user) {
+
+        mongoTemplate.insert(user);
+
+        return user.getId();
+    }
+
     @Override
     public Boolean replace(User user) {
         Criteria criteria = Criteria.where("_id").is(user.getId())
@@ -48,5 +52,17 @@ public class UserTemplateImpl implements UserTemplate {
     public User findById(String id) {
 
         return mongoTemplate.findById(id, User.class);
+    }
+
+    @Override
+    public void update(String name, int age, int num) {
+        Criteria criteria = Criteria.where("name").is(name).orOperator(Criteria.where("age").is(age));
+
+        Query query = new Query(criteria);
+
+        Update update = new Update().inc("age",num);
+//        Update update = new Update().set("age",1);
+
+        mongoTemplate.updateMulti(query, update, User.class);
     }
 }

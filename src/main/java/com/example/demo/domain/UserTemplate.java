@@ -9,6 +9,14 @@ package com.example.demo.domain;
 
 public interface UserTemplate {
 
+
+    /**
+     * 保存
+     *
+     * @param user
+     */
+    String save(User user);
+
     /**
      * 整体替换
      *
@@ -19,8 +27,18 @@ public interface UserTemplate {
 
     /**
      * 根据ID查询
+     *
      * @param id
      * @return
      */
     User findById(String id);
+
+    /**
+     * 更新
+     *
+     * @param name
+     * @param age
+     * @param num
+     */
+    void update(String name, int age, int num);
 }
