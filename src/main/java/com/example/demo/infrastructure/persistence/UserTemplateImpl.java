@@ -4,10 +4,12 @@ import com.example.demo.domain.School;
 import com.example.demo.domain.User;
 import com.example.demo.domain.UserTemplate;
 import com.example.demo.util.GsonUtil;
+import com.example.demo.util.Paginate;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -41,7 +43,8 @@ public class UserTemplateImpl implements UserTemplate {
     @Override
     public List<User> findAll(int age) {
         Criteria criteria = Criteria.where("age").gt(age);
-        Query query = new Query(criteria);
+        Query query = new Query(criteria)
+                .with(new Sort(Sort.Direction.DESC, "age"));
 
         return mongoTemplate.find(query, User.class);
     }
@@ -106,4 +109,37 @@ public class UserTemplateImpl implements UserTemplate {
         mongoTemplate.updateFirst(new Query(criteria), update, User.class);
     }
 
+    @Override
+    public List<User> likeQuery(String name) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("name").regex(name));
+
+// 法二：BasicQuery query = new BasicQuery("{\"name\": {$regex : '" + name + "'} }");
+
+        return mongoTemplate.find(query, User.class);
+    }
+
+    @Override
+    public List<User> ignoreCaseQuery(String name) {
+        Query query = new Query();
+        // 法一
+        query.addCriteria(Criteria.where("name").regex(name,"i"));
+        // 法二
+//        query.addCriteria(Criteria.where("name").regex(
+//                Pattern.compile(Pattern.quote(name), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE)));
+        return mongoTemplate.find(query, User.class);
+    }
+
+    @Override
+    public List<User> findAll(String name, Paginate paginate) {
+        Criteria criteria = Criteria.where("name").is(name);
+
+        paginate.setTotalNumber(mongoTemplate.count(new Query(criteria),User.class));
+        paginate.calcTotalPageNumber();
+
+        Query query = new Query(criteria).with(new Sort(Sort.Direction.DESC, "age"));
+        query.skip(paginate.caclStartNum()).limit(paginate.getPage());
+
+        return mongoTemplate.find(query,User.class);
+    }
 }

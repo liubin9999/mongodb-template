@@ -1,5 +1,7 @@
 package com.example.demo.domain;
 
+import com.example.demo.util.Paginate;
+
 import java.util.List;
 
 /**
@@ -68,4 +70,37 @@ public interface UserTemplate {
      */
     void addToList(String name, List<School> schools);
 
+    /**
+     * 模糊查询
+     *
+     * @param name
+     * @return
+     */
+    List<User> likeQuery(String name);
+
+    /**
+     * 忽略大小写
+     *
+     * @param name
+     * @return
+     */
+    List<User> ignoreCaseQuery(String name);
+
+    /**
+     * 分页获取
+     *
+     * @param name
+     * @param paginate
+     * @return
+     */
+    List<User> findAll(String name, Paginate paginate);
+
+    /**
+     * 计算总数
+     * @param name
+     * @return
+     */
+    long count(String name);
+
+    //删除、去重、删除集合中指定元素 、聚合查询
 }
