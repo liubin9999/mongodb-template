@@ -97,10 +97,20 @@ public class UserTemplateService {
         System.out.println("\n\n查询结果：----" + paginate.toString());
     }
 
-    @PostConstruct
+
     public void count(){
         String name = "张三";
         long num = userTemplate.count(name);
         System.out.println("\n查询结果：----" + num);
     }
+
+    @PostConstruct
+    public void delete(){
+        String id = "5a1bca32160e23cf7046b7f6";
+
+        long num = userTemplate.delete(id);
+
+        System.out.println("\n\n查询结果：----" + num +"\n\n");
+    }
+
 }

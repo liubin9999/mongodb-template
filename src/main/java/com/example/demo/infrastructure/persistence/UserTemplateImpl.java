@@ -151,4 +151,13 @@ public class UserTemplateImpl implements UserTemplate {
 
         return mongoTemplate.count(query, User.class);
     }
+
+    @Override
+    public long delete(String id) {
+        Criteria criteria = Criteria.where("_id").is(id);
+
+        WriteResult writeResult = mongoTemplate.remove(new Query(criteria),User.class);
+
+        return writeResult.getN();
+    }
 }

@@ -102,5 +102,12 @@ public interface UserTemplate {
      */
     long count(String name);
 
-    //删除、去重、删除集合中指定元素 、聚合查询
+    /**
+     * 删除
+     * @param id
+     * @return
+     */
+    long delete(String id);
+
+    // 去重、删除集合中指定元素 、聚合查询
 }
