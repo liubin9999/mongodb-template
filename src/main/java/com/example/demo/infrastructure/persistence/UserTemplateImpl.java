@@ -142,4 +142,13 @@ public class UserTemplateImpl implements UserTemplate {
 
         return mongoTemplate.find(query,User.class);
     }
+
+    @Override
+    public long count(String name) {
+        Criteria criteria = Criteria.where("name").is(name);
+
+        Query query = new Query(criteria);
+
+        return mongoTemplate.count(query, User.class);
+    }
 }

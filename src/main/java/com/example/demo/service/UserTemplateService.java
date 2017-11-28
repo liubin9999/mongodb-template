@@ -86,7 +86,6 @@ public class UserTemplateService {
         System.out.println("查询结果：----" + userList.toString());
     }
 
-    @PostConstruct
     private void findAllByPaginate(){
         String name = "张三";
         Paginate paginate = new Paginate();
@@ -96,5 +95,12 @@ public class UserTemplateService {
         List<User> userList = userTemplate.findAll(name,paginate);
         System.out.println("查询结果：----" + userList.toString());
         System.out.println("\n\n查询结果：----" + paginate.toString());
+    }
+
+    @PostConstruct
+    public void count(){
+        String name = "张三";
+        long num = userTemplate.count(name);
+        System.out.println("\n\n查询结果：----" + num);
     }
 }
