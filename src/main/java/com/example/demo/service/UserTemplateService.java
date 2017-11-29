@@ -6,8 +6,11 @@ import com.example.demo.domain.UserTemplate;
 import com.example.demo.domain.pojo.HostingCount;
 import com.example.demo.util.Paginate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,13 +89,15 @@ public class UserTemplateService {
         System.out.println("查询结果：----" + userList.toString());
     }
 
+    @PostConstruct
     private void findAllByPaginate(){
         String name = "张三";
         Paginate paginate = new Paginate();
         paginate.setPage(0);
         paginate.setSize(2);
 
-        List<User> userList = userTemplate.findAll(name,paginate);
+//        List<User> userList = userTemplate.findAll(name,paginate);
+        List<User> userList = userTemplate.findWithPageable(name,new PageRequest(1,1,new Sort("age")));
         System.out.println("查询结果：----" + userList.toString());
         System.out.println("\n\n查询结果：----" + paginate.toString());
     }
@@ -115,7 +120,7 @@ public class UserTemplateService {
     public void distinctQuery(){
         String dictinc = "name";
         int age = 0 ;
-        List<HostingCount> result = userTemplate.distinctQuery(dictinc, age);
+        List<HostingCount> result = userTemplate.aggregateQuery(dictinc, age);
 
         // HostingCount(total=1, name=张三, age=112, content={ "name" : "张三" , "age" : 112})
         System.out.println("\n\n查询结果：----" + result.toString() +"\n\n");

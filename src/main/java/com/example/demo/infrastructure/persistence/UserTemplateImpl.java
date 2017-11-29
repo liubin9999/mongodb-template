@@ -15,12 +15,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.mapreduce.GroupBy;
+import org.springframework.data.mongodb.core.mapreduce.GroupByResults;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import java.util.Iterator;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
@@ -150,6 +153,24 @@ public class UserTemplateImpl implements UserTemplate {
     }
 
     @Override
+    public List<User> findWithPageable(String name, Pageable pageable) {
+        Criteria criteria = Criteria.where("name").is(name);
+
+        Query query = new Query(criteria).with(pageable);
+
+        return mongoTemplate.find(query, User.class);
+    }
+
+    @Override
+    public List<User> findWithSort(String name, Sort sort) {
+        Criteria criteria = Criteria.where("name").is(name);
+
+        Query query = new Query(criteria).with(sort);
+
+        return mongoTemplate.find(query, User.class);
+    }
+
+    @Override
     public long count(String name) {
         Criteria criteria = Criteria.where("name").is(name);
 
@@ -168,28 +189,50 @@ public class UserTemplateImpl implements UserTemplate {
     }
 
     @Override
-    public List<HostingCount> distinctQuery(String distinct, int age) {
+    public List<HostingCount> aggregateQuery(String distinct, int age) {
         Criteria criteria = Criteria.where("age").gt(age);
         Aggregation agg = newAggregation(
                 match(criteria),
-                group("name","age").count().as("total"),
-                project("total","age","name").and("content").previousOperation(),
+                group("name", "age").count().as("total"),
+                project("total", "age", "name").and("content").previousOperation(),
                 sort(Sort.Direction.DESC, "total")
         );
 
         //Convert the aggregation result into a List
         AggregationResults<HostingCount> groupResults
                 = mongoTemplate.aggregate(agg, User.class, HostingCount.class);
+
         return groupResults.getMappedResults();
 
     }
 
+
     @Override
-    public List<User> findByPageable(String name, Pageable pageable) {
-        Criteria criteria = Criteria.where("name").gt(name);
+    public Iterator<HostingCount> groupQuery(int age) {
+        Criteria criteria = Criteria.where("age").gt(age);
 
-        Query query = new Query(criteria).with(pageable);
+        // 这是一个demo  实际的情况要实际而定
+        GroupBy groupBy = GroupBy.key("teacherId").initialDocument("{teacherId: 0, " +
+                "workTopicCount: 0, submitWorkCount: 0, " +
+                "correctWorkCount: 0, wrongWorkCount: 0, " +
+                "correctEmendCount: 0, groupWorkCount: 0, workCount: 0} ")
 
-        return mongoTemplate.find(query, User.class);
+                .reduceFunction("function(key, result){"
+                        + "result.teacherId = key.teacherId;"
+                        + "result.workTopicCount += key.topicNum;"
+                        + "result.submitWorkCount += key.handIn; "
+                        + "result.correctWorkCount += key.correctNum;"
+                        + "if(key.workFlag == 2) {result.wrongWorkCount += 1}; "
+                        + "if(key.correctEmendNum > 0){result.correctEmendCount += 1}; "
+                        + "key.targets.forEach(function(value, index, array) {" +
+                        "if(value.groupFlag ==2){" +
+                        "result.groupWorkCount += 1;" +
+                        "return;}});"
+                        + "result.workCount += 1;}");
+
+        GroupByResults<HostingCount> group=mongoTemplate.group(criteria,
+                mongoTemplate.getCollectionName(User.class),
+                groupBy, HostingCount.class);
+        return group.iterator();
     }
 }
