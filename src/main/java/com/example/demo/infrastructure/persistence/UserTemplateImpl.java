@@ -6,6 +6,7 @@ import com.example.demo.domain.UserTemplate;
 import com.example.demo.domain.pojo.HostingCount;
 import com.example.demo.util.GsonUtil;
 import com.example.demo.util.Paginate;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
@@ -234,5 +235,33 @@ public class UserTemplateImpl implements UserTemplate {
                 mongoTemplate.getCollectionName(User.class),
                 groupBy, HostingCount.class);
         return group.iterator();
+    }
+
+    @Override
+    public Iterator<User> distinctQuery(String name) {
+        Criteria criteria = Criteria.where("name").is(name);
+
+        Query query = new Query(criteria);
+
+        // {"age":22,"locate":" 北京","name":"dolphin"}
+        GroupBy groupBy = GroupBy.key("name");
+        DBObject initialDocument = new BasicDBObject();
+        initialDocument.put("age", 0);
+        groupBy.initialDocument(initialDocument);
+        String reduceFunction= "function(cur, result){" +
+                "if(cur.age>result.age)" +
+                "result.age = cur.age;" +
+                "result.name = cur.name;result._id = cur._id}";
+        groupBy.reduceFunction(reduceFunction);
+        GroupByResults<User>  results = mongoTemplate.group(mongoTemplate.getCollectionName(User.class), groupBy, User.class);
+        return results.iterator();
+    }
+
+    @Override
+    public Boolean exist(String name) {
+        Criteria criteria = Criteria.where("name").is(name);
+
+        Query query = new Query(criteria);
+        return mongoTemplate.exists(query,User.class);
     }
 }

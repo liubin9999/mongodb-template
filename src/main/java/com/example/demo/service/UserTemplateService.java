@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -89,7 +90,6 @@ public class UserTemplateService {
         System.out.println("查询结果：----" + userList.toString());
     }
 
-    @PostConstruct
     private void findAllByPaginate(){
         String name = "张三";
         Paginate paginate = new Paginate();
@@ -117,13 +117,34 @@ public class UserTemplateService {
         System.out.println("\n\n查询结果：----" + num +"\n\n");
     }
 
-    public void distinctQuery(){
+    public void aggregateQuery(){
         String dictinc = "name";
         int age = 0 ;
         List<HostingCount> result = userTemplate.aggregateQuery(dictinc, age);
 
         // HostingCount(total=1, name=张三, age=112, content={ "name" : "张三" , "age" : 112})
         System.out.println("\n\n查询结果：----" + result.toString() +"\n\n");
+    }
+
+    public void distinctQuery(){
+        String name = "张三";
+
+        Iterator<User> userIterator = userTemplate.distinctQuery(name);
+
+        while(userIterator.hasNext()){
+            User user = userIterator.next();
+            System.out.println("输出结果" + user.toString());
+        }
+    }
+
+    @PostConstruct
+    public void exist(){
+        String name = "22";
+
+        Boolean existState = userTemplate.exist(name);
+
+        System.out.println("\n\n判断结果：----" + existState +"\n\n");
+
     }
 
 }

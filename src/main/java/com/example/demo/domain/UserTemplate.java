@@ -119,6 +119,7 @@ public interface UserTemplate {
 
     /**
      * 计算总数
+     *
      * @param name
      * @return
      */
@@ -126,6 +127,7 @@ public interface UserTemplate {
 
     /**
      * 删除
+     *
      * @param id
      * @return
      */
@@ -134,6 +136,7 @@ public interface UserTemplate {
     /**
      * 聚合查询
      * <pre>https://docs.mongodb.com/manual/aggregation/</pre>
+     *
      * @param distinct
      * @param age
      * @return
@@ -148,5 +151,21 @@ public interface UserTemplate {
      */
     Iterator<HostingCount> groupQuery(int age);
 
-    // 去重、删除集合中指定元素
+    /**
+     * 去重查询
+     *
+     * @return
+     */
+    Iterator<User> distinctQuery(String name);
+
+    /**
+     * 判断数据是否存在
+     *
+     * @param name
+     * @return
+     */
+    Boolean exist(String name);
+
+
+    // 删除集合中指定元素
 }
