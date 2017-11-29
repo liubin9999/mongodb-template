@@ -190,6 +190,19 @@ public class UserTemplateImpl implements UserTemplate {
     }
 
     @Override
+    public Integer deleteProperty(String name) {
+        Criteria criteria = Criteria.where("name").is(name);
+
+        Update update = new Update().unset("age");
+
+        Query query = new Query(criteria);
+
+        WriteResult writeResult = mongoTemplate.updateFirst(query, update, User.class);
+
+        return writeResult.getN();
+    }
+
+    @Override
     public List<HostingCount> aggregateQuery(String distinct, int age) {
         Criteria criteria = Criteria.where("age").gt(age);
         Aggregation agg = newAggregation(

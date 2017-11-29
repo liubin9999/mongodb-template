@@ -134,6 +134,14 @@ public interface UserTemplate {
     long delete(String id);
 
     /**
+     * 删除指定属性
+     *
+     * @param name
+     * @return
+     */
+    Integer deleteProperty(String name);
+
+    /**
      * 聚合查询
      * <pre>https://docs.mongodb.com/manual/aggregation/</pre>
      *

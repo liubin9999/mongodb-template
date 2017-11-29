@@ -137,14 +137,20 @@ public class UserTemplateService {
         }
     }
 
-    @PostConstruct
     public void exist(){
         String name = "22";
 
         Boolean existState = userTemplate.exist(name);
 
         System.out.println("\n\n判断结果：----" + existState +"\n\n");
-
     }
 
+    @PostConstruct
+    public void deleteProperty(){
+        String name = "张齐三";
+
+        int num = userTemplate.deleteProperty(name);
+
+        System.out.println("\n\n判断结果：----" + num +"\n\n");
+    }
 }
