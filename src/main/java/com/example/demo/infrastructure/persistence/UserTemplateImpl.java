@@ -61,8 +61,8 @@ public class UserTemplateImpl implements UserTemplate {
 
     @Override
     public List<User> nativeQuery(String name) {
-        BasicQuery query2 = new BasicQuery("{ age : { $gt : 1 }, name : '" + name + "' }");
-        return mongoTemplate.find(query2, User.class);
+        BasicQuery query = new BasicQuery("{ age : { $gt : 1 }, name : '" + name + "' }");
+        return mongoTemplate.find(query, User.class);
     }
 
     @Override
@@ -89,18 +89,16 @@ public class UserTemplateImpl implements UserTemplate {
     public void update(String name, int age, int num) {
         Criteria criteria = Criteria.where("name").is(name).orOperator(Criteria.where("age").is(age));
 
-        Query query = new Query(criteria);
-
         Update update = new Update().inc("age", num);
 //        Update update = new Update().set("age",1);
 
         //1、有则改变（改变多条）   无则不改变（不创建） 返回更新后的值（多条显示最新一条），无则返回null
-        //mongoTemplate.findAndModify(query, update, User.class);
+        //mongoTemplate.findAndModify(Query.query(criteria), update, User.class);
 
         //2、有则改变   无则创建一条新纪录  只更新一条记录
-        // mongoTemplate.upsert(query,update,User.class);
+        // mongoTemplate.upsert(Query.query(criteria),update,User.class);
 
-        mongoTemplate.updateMulti(query, update, User.class);
+        mongoTemplate.updateMulti(Query.query(criteria), update, User.class);
     }
 
     @Override
@@ -116,7 +114,7 @@ public class UserTemplateImpl implements UserTemplate {
         Update.AddToSetBuilder ab = update.new AddToSetBuilder("schools");
         update = ab.each(schools);
 
-        mongoTemplate.updateFirst(new Query(criteria), update, User.class);
+        mongoTemplate.updateFirst(Query.query(criteria), update, User.class);
     }
 
     @Override
@@ -175,16 +173,14 @@ public class UserTemplateImpl implements UserTemplate {
     public long count(String name) {
         Criteria criteria = Criteria.where("name").is(name);
 
-        Query query = new Query(criteria);
-
-        return mongoTemplate.count(query, User.class);
+        return mongoTemplate.count(Query.query(criteria), User.class);
     }
 
     @Override
     public long delete(String id) {
         Criteria criteria = Criteria.where("_id").is(id);
 
-        WriteResult writeResult = mongoTemplate.remove(new Query(criteria), User.class);
+        WriteResult writeResult = mongoTemplate.remove(Query.query(criteria), User.class);
 
         return writeResult.getN();
     }
@@ -195,9 +191,7 @@ public class UserTemplateImpl implements UserTemplate {
 
         Update update = new Update().unset("age");
 
-        Query query = new Query(criteria);
-
-        WriteResult writeResult = mongoTemplate.updateFirst(query, update, User.class);
+        WriteResult writeResult = mongoTemplate.updateFirst(Query.query(criteria), update, User.class);
 
         return writeResult.getN();
     }
@@ -274,7 +268,6 @@ public class UserTemplateImpl implements UserTemplate {
     public Boolean exist(String name) {
         Criteria criteria = Criteria.where("name").is(name);
 
-        Query query = new Query(criteria);
-        return mongoTemplate.exists(query,User.class);
+        return mongoTemplate.exists(Query.query(criteria),User.class);
     }
 }
