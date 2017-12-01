@@ -66,6 +66,6 @@ public class UserService {
     public void distinctQuery() {
         List<User> userList = userRepository.findDistinctByName();
 
-        System.out.println("\n\n查询结果：----" + userList.toString() + "\n\n");
+        System.out.println("\n查询结果：----" + userList.toString() + "\n\n");
     }
 }
