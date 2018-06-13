@@ -8,6 +8,7 @@ import com.example.demo.util.GsonUtil;
 import com.example.demo.util.Paginate;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.QueryBuilder;
 import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,8 @@ public class UserTemplateImpl implements UserTemplate {
     @Override
     public String save(User user) {
 
-        mongoTemplate.insert(user);
+//        mongoTemplate.insert(user);
+        mongoTemplate.save(user);
 
         return user.getId();
     }
@@ -69,6 +71,7 @@ public class UserTemplateImpl implements UserTemplate {
     public Boolean replace(User user) {
         Criteria criteria = Criteria.where("_id").is(user.getId())
                 .and("age").is(user.getAge());
+        // 最好加上乐观锁  通过版本号控制并发修改
         Update update = Update.fromDBObject((DBObject) JSON.parse(GsonUtil.gson().toJson(user)));
 
         WriteResult wr = mongoTemplate.updateFirst(Query.query(criteria), update, User.class);
@@ -256,9 +259,10 @@ public class UserTemplateImpl implements UserTemplate {
         initialDocument.put("age", 0);
         groupBy.initialDocument(initialDocument);
         String reduceFunction= "function(cur, result){" +
-                "if(cur.age>result.age)" +
-                "result.age = cur.age;" +
-                "result.name = cur.name;result._id = cur._id}";
+                "if(cur.age > result.age){" +
+                "result.age = cur.age;}" +
+                "result.name = cur.name;" +
+                "result._id = cur._id}";
         groupBy.reduceFunction(reduceFunction);
         GroupByResults<User>  results = mongoTemplate.group(mongoTemplate.getCollectionName(User.class), groupBy, User.class);
         return results.iterator();
@@ -269,5 +273,44 @@ public class UserTemplateImpl implements UserTemplate {
         Criteria criteria = Criteria.where("name").is(name);
 
         return mongoTemplate.exists(Query.query(criteria),User.class);
+    }
+
+    @Override
+    public List<User> findFields(String name) {
+        // 两种不同方式写的条件
+        Criteria criteria = Criteria.where("name").is(name);
+        QueryBuilder queryBuilder = new QueryBuilder();
+        queryBuilder.and("age").greaterThan(1).lessThan(100);
+        // 指定字段
+        BasicDBObject fields = new BasicDBObject();
+        fields.put("name", 1);
+        fields.put("age", 1);
+
+        Query query = new BasicQuery(queryBuilder.get(), fields);
+        query.addCriteria(criteria);
+
+        return mongoTemplate.find(query, User.class);
+    }
+
+    @Override
+    public long aggregationCount(String name) {
+        Criteria criteria = Criteria.where("name").is(name);
+
+        Aggregation aggregation =
+                Aggregation.newAggregation(
+                        Aggregation.match(criteria),
+                        Aggregation.group("$name")
+                                .sum("$age").as("年龄之和")
+                                .max("$age").as("最大年龄"));
+        AggregationResults<BasicDBObject> outputTypeCount =
+                mongoTemplate.aggregate(aggregation, mongoTemplate.getCollectionName(User.class), BasicDBObject.class);
+        if (outputTypeCount == null){
+            return 0L;
+        }
+
+        for (BasicDBObject obj : outputTypeCount) {
+            System.out.println(JSON.serialize(obj));
+        }
+        return 0L;
     }
 }

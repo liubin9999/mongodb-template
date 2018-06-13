@@ -152,6 +152,14 @@ public interface UserTemplate {
     List<HostingCount> aggregateQuery(String distinct, int age);
 
     /**
+     * 聚合查询 -- 推荐
+     *
+     * @param name
+     * @return
+     */
+    long aggregationCount(String name);
+
+    /**
      * 聚合查询
      *
      * @param age
@@ -175,5 +183,13 @@ public interface UserTemplate {
     Boolean exist(String name);
 
 
-    //  TODO 删除集合中指定元素
+    /**
+     * 查询指定字段
+     *
+     * @param name
+     * @return
+     */
+    List<User> findFields(String name);
+
+
 }

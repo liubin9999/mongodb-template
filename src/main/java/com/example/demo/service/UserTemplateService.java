@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,10 +26,10 @@ public class UserTemplateService {
     @Autowired
     private UserTemplate userTemplate;
 
-
     private void save() {
         User user = new User();
         user.createUserCase();
+        user.setId("5a31dcdf160e2338a05d5b17");
         userTemplate.save(user);
     }
 
@@ -145,7 +144,6 @@ public class UserTemplateService {
         System.out.println("\n\n判断结果：----" + existState +"\n\n");
     }
 
-    @PostConstruct
     public void deleteProperty(){
         String name = "张齐三";
 
