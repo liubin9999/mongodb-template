@@ -6,9 +6,10 @@ swagger.enabled: true
 spring:
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: test
+   #   host: 47.93.1.51
+   #   port: 27017
+   #   database: admin
+      uri: mongodb://47.93.1.51:27017/admin
 
   jpa:
     repositories:

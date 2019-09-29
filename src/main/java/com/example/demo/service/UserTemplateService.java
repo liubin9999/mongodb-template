@@ -26,14 +26,14 @@ public class UserTemplateService {
     @Autowired
     private UserTemplate userTemplate;
 
-    private void save() {
+    public void save() {
         User user = new User();
         user.createUserCase();
-        user.setId("5a31dcdf160e2338a05d5b17");
+    //    user.setId("5a31dcdf160e2338a05d5b17");
         userTemplate.save(user);
     }
 
-    private void repalce() {
+    public void repalce() {
         User user = userTemplate.findById("5a1bc470160e23b788a18eb7");
         user.setName("张三");
         userTemplate.replace(user);
@@ -41,14 +41,14 @@ public class UserTemplateService {
     }
 
 
-    private void update() {
+    public void update() {
         String name = "张三";
         int age = 1;
         int num = 2;
         userTemplate.update(name, age, num);
     }
 
-    private void addToSet() {
+    public void addToSet() {
         String name = "张三";
 
         List<School> schoolList = new ArrayList<>();
@@ -58,7 +58,7 @@ public class UserTemplateService {
         userTemplate.addToList(name, schoolList);
     }
 
-    private void findByNativeQuery() {
+    public void findByNativeQuery() {
         String name = "张三";
         List<User> userList = userTemplate.nativeQuery(name);
 
@@ -66,14 +66,14 @@ public class UserTemplateService {
     }
 
 
-    private void findAll() {
+    public void findAll() {
         int age = 0;
         List<User> userList = userTemplate.findAll(age);
 
         System.out.println("查询结果：----" + userList.toString());
     }
 
-    private void likeQuery(){
+    public void likeQuery(){
         String name = "齐";
 
         List<User> userList = userTemplate.likeQuery(name);
@@ -81,7 +81,7 @@ public class UserTemplateService {
         System.out.println("查询结果：----" + userList.toString());
     }
 
-    private void ignoreCaseQuery(){
+    public void ignoreCaseQuery(){
         String name = "HelloWorD";
 
         List<User> userList = userTemplate.ignoreCaseQuery(name);
@@ -89,7 +89,7 @@ public class UserTemplateService {
         System.out.println("查询结果：----" + userList.toString());
     }
 
-    private void findAllByPaginate(){
+    public void findAllByPaginate(){
         String name = "张三";
         Paginate paginate = new Paginate();
         paginate.setPage(0);

@@ -57,20 +57,20 @@ public class User {
      * 创建一个实例
      */
     public void createUserCase(){
-        this.name = "张三22";
-        this.age = 122;
+        this.name = "张三33";
+        this.age = 33;
 
         List<String> address = new ArrayList<>();
         address.add("杭州");
         address.add("上海");
         this.address = address;
 
-        BodyBuild bodyBuild = new BodyBuild(111, 222, "A");
+        BodyBuild bodyBuild = new BodyBuild(3, 2, "111aaa");
         this.bodyBuild = bodyBuild;
 
         List<School> schoolList = new ArrayList<>();
-        schoolList.add(new School(111, "学校名称", 2015));
-        schoolList.add(new School(1123, "学校名称--2", 2016));
+    //    schoolList.add(new School(111, "学校名称", 2015));
+    //   schoolList.add(new School(1123, "学校名称--2", 2016));
         this.schools = schoolList;
     }
 
